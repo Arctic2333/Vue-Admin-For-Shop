@@ -1,5 +1,5 @@
 # Vue-Admin-For-Shop
-基于[vue-admin-template](https://gitee.com/panjiachen/vue-admin-template)商城后台管理前端项目，数据使用MockServer模拟，满足前后端分离开发
+基于[vue-admin-template](https://gitee.com/panjiachen/vue-admin-template)商城后台管理前端项目，开发阶段数据使用MockServer模拟，满足前后端分离开发
 
 ## 快速上手文档：
 
