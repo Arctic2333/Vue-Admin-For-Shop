@@ -38,7 +38,7 @@
 
 2. mock模拟数据：
 
-   ![](README.assets/1.png)
+   ![abc](README.assets/abc.png)
 
    mock文件下创建对应js文件，在index中注册url，这样mockserver就能拦截全部对应的url了。
 
