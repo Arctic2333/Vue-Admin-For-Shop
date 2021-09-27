@@ -1,6 +1,8 @@
 # Vue-Admin-For-Shop
 基于[vue-admin-template](https://gitee.com/panjiachen/vue-admin-template)商城后台管理前端项目，开发阶段数据使用MockServer模拟，满足前后端分离开发
 
+当前项目设置为请求本地后端项目的API，具体设置跳转到[前后端联调](#jump)，需要MockServer只需逆操作即可
+
 ## 快速上手文档：
 
 1. [vue-element-admin (gitee.io)](https://panjiachen.gitee.io/vue-element-admin-site/zh/)
@@ -60,7 +62,7 @@
    
      
    
-## 前后端联调 前端页面设置 后端跨域设置
+## <span id="jump">前后端联调 前端页面设置 后端跨域设置</span>
 
 ![image-20210927085522240](README.assets/image-20210927085522240.png)
 
