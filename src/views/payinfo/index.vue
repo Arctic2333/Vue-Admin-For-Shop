@@ -158,9 +158,10 @@
 </template>
 
 <script>
-import {deletePayinfo, getPayinfo, updatePayinfo} from "@/api/payinfo";
 import {getTime} from "@/utils/get-time";
+import {deleteData, getData, updateData} from "@/api/com";
 
+const api_name = 'payinfo'
 export default {
   data() {
     return {
@@ -194,7 +195,7 @@ export default {
   },
   methods: {
     fetchData() {
-      getPayinfo().then(response => {
+      getData('', api_name).then(response => {
           this.tableData = response.data
         }
       )
@@ -212,7 +213,7 @@ export default {
       console.log(index, row)
     },
     delete(data) {
-      deletePayinfo(data).then(
+      deleteData(data, api_name).then(
         response => {
           this.status = response.status
           if (this.status === 20000) {
@@ -240,7 +241,7 @@ export default {
             done()
             // 更新
             this.form.update_time = getTime()
-            updatePayinfo(this.form).then(
+            updateData(this.form, api_name).then(
               response => {
                 this.status = response.status
                 if (this.status === 20000) {

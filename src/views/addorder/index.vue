@@ -35,8 +35,9 @@
 
 <script>
 import {getTime} from "@/utils/get-time";
-import {addOrder} from "@/api/order";
+import {addData} from "@/api/com";
 
+const api_name = 'order'
 export default {
   data() {
     return {
@@ -62,7 +63,7 @@ export default {
       console.log('submit!');
     },
     add(data) {
-      addOrder(data).then(response => {
+      addData(data,api_name).then(response => {
           this.status = response.status
           if (this.status === 20000) {
             this.$message({message: '添加成功', type: 'success'})

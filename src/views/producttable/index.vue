@@ -116,9 +116,10 @@
 </template>
 
 <script>
-import { deletePro, getTable, updatePro } from '@/api/product'
 import {getTime} from "@/utils/get-time";
+import {deleteData, getData, updateData} from "@/api/com";
 
+const api_name = 'product'
 export default {
   data() {
     return {
@@ -148,7 +149,7 @@ export default {
   },
   methods: {
     fetchData() {
-      getTable().then(response => {
+      getData('', api_name).then(response => {
         this.tableData = response.data
       }
       )
@@ -165,7 +166,7 @@ export default {
       console.log(index, row)
     },
     delete(data) {
-      deletePro(data).then(
+      deleteData(data, api_name).then(
         response => {
           this.status = response.status
           if (this.status === 20000) {
@@ -193,7 +194,7 @@ export default {
             done()
             // 更新
             this.form.update_time = getTime()
-            updatePro(this.form).then(
+            updateData(this.form, api_name).then(
               response => {
                 this.status = response.status
                 if (this.status === 20000) {

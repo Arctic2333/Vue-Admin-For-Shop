@@ -126,9 +126,10 @@
 
 <script>
 
-import {getOrder, addOrder, deleteOrder, updateOrder} from "@/api/order";
 import {getTime} from "@/utils/get-time";
+import {deleteData, getData, updateData} from "@/api/com";
 
+const api_name = 'order'
 export default {
   data() {
     return {
@@ -160,7 +161,7 @@ export default {
   },
   methods: {
     fetchData() {
-      getOrder().then(response => {
+      getData('',api_name).then(response => {
           this.tableData = response.data
         }
       )
@@ -178,7 +179,7 @@ export default {
       console.log(index, row)
     },
     delete(data){
-      deleteOrder(data).then(
+      deleteData(data,api_name).then(
         response => {
           this.status = response.status
           if (this.status === 20000) {
@@ -206,7 +207,7 @@ export default {
             done()
             // 更新
             this.form.update_time = getTime()
-            updateOrder(this.form).then(
+            updateData(this.form,api_name).then(
               response => {
                 this.status = response.status
                 if (this.status === 20000) {

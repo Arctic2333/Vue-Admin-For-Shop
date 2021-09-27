@@ -88,8 +88,9 @@
 </template>
 
 <script>
-import {addCart, deleteCart, getCart, updateCart} from "@/api/cart";
+import {addData, deleteData, getData, updateData} from "@/api/com";
 
+const api_name  = 'cart'
 export default {
   data() {
     return {
@@ -117,7 +118,7 @@ export default {
   },
   methods: {
     fetchData() {
-      getCart().then(response => {
+      getData('', api_name).then(response => {
           this.tableData = response.data
         }
       )
@@ -139,7 +140,7 @@ export default {
       console.log(index, row)
     },
     add(data) {
-      addCart(data).then(response => {
+      addData(data, api_name).then(response => {
           this.status = response.status
           if (this.status === 20000) {
             this.$message({message: '新增购物车信息成功', type: 'success'})
@@ -151,7 +152,7 @@ export default {
       this.reload()
     },
     delete(data) {
-      deleteCart(data).then(
+      deleteData(data, api_name).then(
         response => {
           this.status = response.status
           if (this.status === 20000) {
@@ -164,7 +165,7 @@ export default {
       this.reload()
     },
     edit(data) {
-      updateCart(data).then(response => {
+      updateData(data, api_name).then(response => {
         this.status = response.status
         if (this.status === 20000) {
           this.$message({message: '修改成功', type: 'success'})

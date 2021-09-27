@@ -10,7 +10,11 @@
       </el-col>
     </el-row>
     <el-table
-      :data="tableData.filter(data => !search || data.name.toLowerCase().includes(search.toLowerCase()))"
+      v-loading.fullscreen.lock="loading"
+      element-loading-text="拼命加载中"
+      element-loading-spinner="el-icon-loading"
+      element-loading-background="rgba(0, 0, 0, 0.8)"
+      :data="table_date"
       style="width: 100%"
     >
       <el-table-column
@@ -54,13 +58,22 @@
         </template>
       </el-table-column>
     </el-table>
+    <el-pagination
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+      :current-page.sync="currentPage"
+      :page-sizes="pageSizes"
+      :page-size="pageSize"
+      layout="sizes, prev, pager, next"
+      :total="totalCount">
+    </el-pagination>
     <el-dialog title="类目详情" :visible.sync="dialogFormVisible">
       <el-form :model="form">
         <el-form-item label="类目名称" :label-width="formLabelWidth">
           <el-input v-model="form.name" autocomplete="off"/>
         </el-form-item>
         <el-form-item v-if="method_t === true" label="父类目" :label-width="formLabelWidth">
-          <el-select v-model="form.prent_id" placeholder="请选择父类目">
+          <el-select v-model="form.parent_id" placeholder="请选择父类目">
             <div v-for="(item,index) in parent_name" :key="item.index">
               <el-option :label="item" :value="parent_id[index]"/>
             </div>
@@ -82,11 +95,22 @@
 </template>
 
 <script>
-import {deleteC, getParentID, getParentName, getTable, insert, insertParent, update} from '@/api/category'
+import {getParentID, getParentName, insert, insertParent} from '@/api/category'
+import {deleteData, getData, updateData} from "@/api/com";
 
+const api_name = 'category';
 export default {
   data() {
     return {
+      loading: false,
+      // 默认显示第几页
+      currentPage: 1,
+      // 总条数，根据接口获取数据长度(注意：这里不能为空)
+      totalCount: 1,
+      // 个数选择器（可修改）
+      pageSizes: [10, 20, 30],
+      // 默认每页显示的条数（可修改）
+      pageSize: 10,
       status: 0,
       method_t: true,
       method_s: true,
@@ -98,7 +122,7 @@ export default {
       form: {
         id: '',
         name: '',
-        prent_id: ''
+        parent_id: ''
       },
       formLabelWidth: '120px',
       del: {
@@ -107,6 +131,7 @@ export default {
     }
   },
   created() {
+    this.loading = true
     this.fetchData()
   },
   methods: {
@@ -124,8 +149,10 @@ export default {
     },
 
     fetchData() {
-      getTable().then(response => {
+      getData('', api_name).then(response => {
         this.tableData = response.data
+        this.totalCount = this.tableData.length
+        this.loading = false
       })
       getParentName().then(response => {
         this.parent_name = response.data
@@ -136,7 +163,7 @@ export default {
     },
 
     edit(data) {
-      update(data).then(response => {
+      updateData(data, api_name).then(response => {
         this.status = response.status
         if (this.status === 20000) {
           this.$message({message: '修改成功', type: 'success'})
@@ -178,7 +205,7 @@ export default {
     },
 
     deleteShop(data) {
-      deleteC(data).then(
+      deleteData(data, api_name).then(
         response => {
           this.status = response.status
           if (this.status === 20000) {
@@ -201,6 +228,35 @@ export default {
       this.$nextTick(function () {
         this.isRouterAlive = true
       })
+    },
+    // 每页显示的条数
+    handleSizeChange(val) {
+      // 改变每页显示的条数
+      this.pageSize = val
+      // 注意：在改变每页显示的条数时，要将页码显示到第一页
+      this.currentPage = 1
+    },
+    // 显示第几页
+    handleCurrentChange(val) {
+      // 改变默认的页数
+      this.currentPage = val
+    },
+  },
+  //计算属性 或者使用watch
+  computed: {
+    table_date() {
+      let search = this.search
+      if (search) {
+        // 搜索结果
+        let res = this.tableData.filter(data => !search || data.name.toLowerCase().includes(search.toLowerCase()))
+        let len = res.slice((this.currentPage - 1) * this.pageSize, this.currentPage * this.pageSize)
+        // 搜索后页长
+        this.totalCount = len.length
+        return res, len
+      } else {
+        this.totalCount = this.tableData.length
+        return this.tableData.slice((this.currentPage - 1) * this.pageSize, this.currentPage * this.pageSize)
+      }
     }
   }
 }

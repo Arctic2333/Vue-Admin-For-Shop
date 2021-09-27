@@ -37,8 +37,9 @@
 <script>
 import {getParentID, getParentName} from "@/api/category";
 import {getTime} from "@/utils/get-time";
-import {addProduct} from "@/api/product";
+import {addData} from "@/api/com";
 
+const api_name = 'product'
 export default {
   data() {
     return {
@@ -76,7 +77,7 @@ export default {
       })
     },
     add(data) {
-      addProduct(data).then(response => {
+      addData(data, api_name).then(response => {
           this.status = response.status
           if (this.status === 20000) {
             this.$message({message: '添加成功', type: 'success'})
