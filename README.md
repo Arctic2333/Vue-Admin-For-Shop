@@ -57,6 +57,39 @@
    4. 使用apifox 或者postman 测试接口 get方法header中需要带上一下几个参数
    
    ![image-20210926160049938](README.assets/image-20210926160049938.png)
+   
+     
+   
+## 前后端联调 前端页面设置 后端跨域设置
+
+![image-20210927085522240](README.assets/image-20210927085522240.png)
+
+根目录下找到.env.development文件中修改BASE_API
+
+![image-20210927085726363](README.assets/image-20210927085726363.png)
+
+根目录下找到vue.config.js配置proxy（紧跟overlay），将 **before: require('./mock/mock-server.js')**注解
+
+```javascript
+proxy: {
+      [process.env.VUE_APP_BASE_API]: {
+        target: process.env.VUE_APP_BASE_API,
+        changeOrigin: true,  //配置跨域
+        pathRewrite: {
+          ['^' + process.env.VUE_APP_BASE_API]: ''
+        }
+      }
+```
+
+**后端跨域：**
+
+![image-20210927090138559](README.assets/image-20210927090138559.png)
+
+在对应的Controller加上注解
+
+```java
+@CrossOrigin(origins = "*",maxAge = 3600)
+```
 
 ## 预览：
 
