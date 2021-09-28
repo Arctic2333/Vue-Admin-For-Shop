@@ -1,7 +1,11 @@
 <template>
   <div class="app-container">
     <el-table
-      :data="tableData.filter(data => !search || data.name.toLowerCase().includes(search.toLowerCase()))"
+      v-loading.fullscreen.lock="load"
+      element-loading-text="拼命加载中"
+      element-loading-spinner="el-icon-loading"
+      element-loading-background="rgba(0, 0, 0, 0.8)"
+      :data="table_date"
       style="width: 100%"
     >
       <el-table-column type="expand">
@@ -75,6 +79,15 @@
         </template>
       </el-table-column>
     </el-table>
+    <el-pagination
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+      :current-page.sync="currentPage"
+      :page-sizes="pageSizes"
+      :page-size="pageSize"
+      layout="sizes, prev, pager, next"
+      :total="totalCount">
+    </el-pagination>
     <el-drawer
       ref="drawer"
       title="修改商品!"
@@ -99,8 +112,8 @@
           </el-form-item>
           <el-form-item label="商品状态" :label-width="formLabelWidth">
             <el-select v-model="form.status">
-              <el-option label="在售" value="1" />
-              <el-option label="下架" value="0" />
+              <el-option label="在售" value=1 />
+              <el-option label="下架" value=0 />
             </el-select>
           </el-form-item>
         </el-form>
@@ -121,8 +134,14 @@ import {deleteData, getData, updateData} from "@/api/com";
 
 const api_name = 'product'
 export default {
+  inject: ['reload'],
   data() {
     return {
+      load: false,
+      currentPage: 1,
+      totalCount: 1,
+      pageSizes: [10, 20, 30],
+      pageSize: 10,
       tableData: [],
       search: '',
       status: 0,
@@ -140,17 +159,19 @@ export default {
       formLabelWidth: '80px',
       timer: null,
       del: {
-        id: ''
+        id: 0
       }
     }
   },
   created() {
+    this.load = true
     this.fetchData()
   },
   methods: {
     fetchData() {
       getData('', api_name).then(response => {
         this.tableData = response.data
+          this.load = false
       }
       )
     },
@@ -177,12 +198,6 @@ export default {
         }
       )
     },
-    reload() {
-      this.isRouterAlive = false
-      this.$nextTick(function() {
-        this.isRouterAlive = true
-      })
-    },
     handleClose(done) {
       if (this.loading) {
         return
@@ -207,8 +222,9 @@ export default {
             // 动画关闭需要一定的时间
             setTimeout(() => {
               this.loading = false
-            }, 50)
-          }, 100)
+            }, 100)
+          }, 500)
+          this.reload()
         })
         .catch(_ => {
         })
@@ -218,6 +234,30 @@ export default {
       this.dialog = false
       clearTimeout(this.timer)
     },
+    handleSizeChange(val) {
+      this.pageSize = val
+      this.currentPage = 1
+    },
+
+    handleCurrentChange(val) {
+      this.currentPage = val
+    },
+  },
+  computed: {
+    table_date() {
+      let search = this.search
+      if (search) {
+        // 搜索结果
+        let res = this.tableData.filter(data => !search || data.name.toLowerCase().includes(search.toLowerCase()))
+        let len = res.slice((this.currentPage - 1) * this.pageSize, this.currentPage * this.pageSize)
+        // 搜索后页长
+        this.totalCount = len.length
+        return res, len
+      } else {
+        this.totalCount = this.tableData.length
+        return this.tableData.slice((this.currentPage - 1) * this.pageSize, this.currentPage * this.pageSize)
+      }
+    }
   }
 }
 </script>

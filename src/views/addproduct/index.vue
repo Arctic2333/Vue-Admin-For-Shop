@@ -7,7 +7,7 @@
       <el-form-item label="商品父类" style="width: 45%">
         <el-select v-model="form.category_id" placeholder="请选择">
           <div v-for="(item,index) in parent_name" :key="item.index">
-            <el-option :label="item" :value="parent_id[index]"/>
+            <el-option :label="item" :value=parent_id[index] />
           </div>
         </el-select>
       </el-form-item>
@@ -22,8 +22,8 @@
       </el-form-item>
       <el-form-item label="商品状态" style="width: 45%">
         <el-select v-model="form.status" placeholder="请选择">
-          <el-option label="在售" value="1"/>
-          <el-option label="下架" value="0"/>
+          <el-option label="在售" value=1 />
+          <el-option label="下架" value=0 />
         </el-select>
       </el-form-item>
       <el-form-item>
@@ -41,6 +41,7 @@ import {addData} from "@/api/com";
 
 const api_name = 'product'
 export default {
+  inject: ['reload'],
   data() {
     return {
       parent_name: [],
@@ -48,7 +49,7 @@ export default {
       status: 0,
       form: {
         name: '',
-        category_id: '',
+        category_id: 0,
         subtitle: '',
         price: 10,
         stock: 10,
@@ -59,6 +60,7 @@ export default {
     }
   },
   created() {
+    this.form = {}
     this.fetchData()
   },
   methods: {
@@ -87,14 +89,8 @@ export default {
         }
       )
       this.reload()
+      this.form = {}
     },
-    reload() {
-      this.form = Object.assign({})
-      this.isRouterAlive = false
-      this.$nextTick(function() {
-        this.isRouterAlive = true
-      })
-    }
   }
 }
 </script>

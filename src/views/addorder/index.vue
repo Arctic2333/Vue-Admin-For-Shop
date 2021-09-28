@@ -39,21 +39,25 @@ import {addData} from "@/api/com";
 
 const api_name = 'order'
 export default {
+  inject: ['reload'],
   data() {
     return {
       form: {
-        user_id: '',
-        order_no: '',
-        product_id: '',
+        user_id: 0,
+        order_no: 0,
+        product_id: 0,
         product_name: '',
         product_image: '',
-        current_unit_price: '',
-        quantity: '',
-        total_price: '',
+        current_unit_price: 0.00,
+        quantity: 0,
+        total_price: 0.00,
         update_time: '',
         create_time: ''
       }
     }
+  },
+  created() {
+    this.form ={}
   },
   methods: {
     onSubmit() {
@@ -73,14 +77,9 @@ export default {
         }
       )
       this.reload()
-    },
-    reload() {
       this.form = {}
-      this.isRouterAlive = false
-      this.$nextTick(function () {
-        this.isRouterAlive = true
-      })
-    }
+    },
+
   }
 }
 </script>

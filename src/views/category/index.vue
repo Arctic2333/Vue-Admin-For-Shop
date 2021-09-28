@@ -31,8 +31,7 @@
       />
       <el-table-column
         label="父类目名"
-        prop="parent_name"
-      />
+        prop="parent_name"/>
       <el-table-column
         align="right"
       >
@@ -75,7 +74,7 @@
         <el-form-item v-if="method_t === true" label="父类目" :label-width="formLabelWidth">
           <el-select v-model="form.parent_id" placeholder="请选择父类目">
             <div v-for="(item,index) in parent_name" :key="item.index">
-              <el-option :label="item" :value="parent_id[index]"/>
+              <el-option :label="item" :value=parent_id[index] />
             </div>
           </el-select>
         </el-form-item>
@@ -97,9 +96,11 @@
 <script>
 import {getParentID, getParentName, insert, insertParent} from '@/api/category'
 import {deleteData, getData, updateData} from "@/api/com";
+import {getTime} from "@/utils/get-time";
 
 const api_name = 'category';
 export default {
+  inject: ['reload'],
   data() {
     return {
       loading: false,
@@ -120,13 +121,16 @@ export default {
       search: '',
       dialogFormVisible: false,
       form: {
-        id: '',
+        id: 0,
         name: '',
-        parent_id: ''
+        parent_id: 0,
+        update_time: '',
+        create_time: '',
+        status: 1
       },
       formLabelWidth: '120px',
       del: {
-        id: ''
+        id: 0
       }
     }
   },
@@ -163,6 +167,7 @@ export default {
     },
 
     edit(data) {
+      this.form.update_time = getTime()
       updateData(data, api_name).then(response => {
         this.status = response.status
         if (this.status === 20000) {
@@ -173,9 +178,12 @@ export default {
       })
       console.log(data)
       this.reload()
+      this.reset()
     },
 
     add(data) {
+      this.form.update_time = getTime()
+      this.form.create_time = getTime()
       if (this.method_t === false) {
         insertParent(data).then(
           response => {
@@ -201,6 +209,7 @@ export default {
         )
         console.log(data)
       }
+      this.reset()
       this.reload()
     },
 
@@ -217,17 +226,14 @@ export default {
       )
       console.log(data)
       this.reload()
+      this.reset()
     },
 
-    reload() {
-      this.form = Object.assign({})
+    reset() {
+      this.form = {}
       this.method_s = true
       this.method_t = true
       this.dialogFormVisible = false
-      this.isRouterAlive = false
-      this.$nextTick(function () {
-        this.isRouterAlive = true
-      })
     },
     // 每页显示的条数
     handleSizeChange(val) {

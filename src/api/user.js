@@ -22,3 +22,11 @@ export function logout() {
     method: 'post'
   })
 }
+
+export function deleteUsers(data) {
+  return request({
+    url: '/user/delete_users.do',
+    method: 'post',
+    data
+  })
+}

@@ -40,6 +40,8 @@ import {addData} from "@/api/com";
 
 const api_name = 'user'
 export default {
+  inject: ['reload'],
+
   data() {
     return {
       form: {
@@ -49,12 +51,15 @@ export default {
         phone: '',
         question: '',
         answer: '',
-        role: '',
+        role: 0,
         wechat_openid: '',
         create_time: '',
         update_time: ''
       }
     }
+  },
+  created() {
+    this.form = {}
   },
   methods: {
     onSubmit() {
@@ -74,14 +79,8 @@ export default {
         }
       )
       this.reload()
+      this.form = {}
     },
-    reload() {
-      this.form = Object.assign({})
-      this.isRouterAlive = false
-      this.$nextTick(function() {
-        this.isRouterAlive = true
-      })
-    }
   }
 }
 </script>

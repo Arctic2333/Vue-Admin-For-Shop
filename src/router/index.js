@@ -160,8 +160,30 @@ export const constantRoutes = [
         path: 'addpayinfo',
         name: 'addpayinfo',
         component: () => import('@/views/addpayinfo/index'),
-        meta: {title: '添加订单', icon: 'el-icon-document'}
+        meta: {title: '添加支付信息', icon: 'el-icon-document'}
       }
+    ]
+  },
+
+  {
+    path: '/advert',
+    component: Layout,
+    redirect: '/advert/advertlist',
+    name: 'Advert',
+    meta: {title: '轮播图管理', icon: 'el-icon-picture'},
+    children: [
+      {
+        path: 'advertlist',
+        name: 'advertlist',
+        component: () => import('@/views/advert/index'),
+        meta: {title: '轮播图管理', icon: 'el-icon-picture'}
+      },
+      {
+        path: 'addadvert',
+        name: 'addadvert',
+        component: () => import('@/views/addadvert/index'),
+        meta: {title: '添加轮播图', icon: 'el-icon-upload2'}
+      },
     ]
   },
 

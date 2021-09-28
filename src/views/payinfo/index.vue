@@ -1,7 +1,11 @@
 <template>
   <div class="app-container">
     <el-table
-      :data="tableData.filter(data => !search || data.user_id.toLowerCase().includes(search.toLowerCase()))"
+      v-loading.fullscreen.lock="load"
+      element-loading-text="拼命加载中"
+      element-loading-spinner="el-icon-loading"
+      element-loading-background="rgba(0, 0, 0, 0.8)"
+      :data="table_date"
       style="width: 100%"
     >
       <el-table-column type="expand">
@@ -12,27 +16,6 @@
             </el-form-item>
             <el-form-item label="订单编号">
               <span>{{ props.row.order_no }}</span>
-            </el-form-item>
-            <el-form-item label="收货地址编号">
-              <span>{{ props.row.shipping_id }}</span>
-            </el-form-item>
-            <el-form-item label="支付金额">
-              <span>{{ props.row.payment }}</span>
-            </el-form-item>
-            <el-form-item label="支付方式">
-              <span v-if="props.row.payment_type === 1">在线支付</span>
-              <span v-else>货到付款</span>
-            </el-form-item>
-            <el-form-item label="运费">
-              <span> {{ props.row.postage }}</span>
-            </el-form-item>
-            <el-form-item label="支付状态">
-              <span v-if="props.row.status === '0'">已取消</span>
-              <span v-else-if="props.row.status ==='10'">未付款</span>
-              <span v-else-if="props.row.status ==='20'">已付款</span>
-              <span v-else-if="props.row.status ==='40'">已发货</span>
-              <span v-else-if="props.row.status ==='50'">交易成功</span>
-              <span v-else-if="props.row.status ==='60'">交易关闭</span>
             </el-form-item>
             <el-form-item label="支付平台">
               <span v-if="props.row.pay_platform === 1">支付宝</span>
@@ -60,8 +43,8 @@
         prop="order_no"
       />
       <el-table-column
-        label="收货地址编号"
-        prop="shipping_id"
+        label="支付信息编号"
+        prop="id"
       />
       <el-table-column
         align="right"
@@ -88,7 +71,15 @@
         </template>
       </el-table-column>
     </el-table>
-
+    <el-pagination
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+      :current-page.sync="currentPage"
+      :page-sizes="pageSizes"
+      :page-size="pageSize"
+      layout="sizes, prev, pager, next"
+      :total="totalCount">
+    </el-pagination>
     <el-drawer
       ref="drawer"
       title="修改支付信息!"
@@ -104,31 +95,6 @@
           </el-form-item>
           <el-form-item label="用户ID" :label-width="formLabelWidth">
             <el-input v-model="form.user_id"></el-input>
-          </el-form-item>
-          <el-form-item label="收货地址ID" :label-width="formLabelWidth">
-            <el-input v-model="form.shipping_id"></el-input>
-          </el-form-item>
-          <el-form-item label="实际付款金额(元)" :label-width="formLabelWidth">
-            <el-input v-model="form.payment"></el-input>
-          </el-form-item>
-          <el-form-item label="支付类型" :label-width="formLabelWidth">
-            <el-select v-model="form.payment_type" placeholder="请选择支付类型">
-              <el-option label="网上支付" value=1></el-option>
-              <el-option label="货到付款" value="0"></el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="运费(元)" :label-width="formLabelWidth">
-            <el-input v-model="form.postage"></el-input>
-          </el-form-item>
-          <el-form-item label="支付状态" :label-width="formLabelWidth">
-            <el-select v-model="form.status" placeholder="请选择支付状态">
-              <el-option label="已取消" value='0'></el-option>
-              <el-option label="非付款" value='10'></el-option>
-              <el-option label="已付款" value='20'></el-option>
-              <el-option label="已发货" value='40'></el-option>
-              <el-option label="交易成功" value='50'></el-option>
-              <el-option label="交易关闭" value='60'></el-option>
-            </el-select>
           </el-form-item>
           <el-form-item label="支付平台" :label-width="formLabelWidth">
             <el-select v-model="form.pay_platform" placeholder="请选择支付平台">
@@ -163,21 +129,23 @@ import {deleteData, getData, updateData} from "@/api/com";
 
 const api_name = 'payinfo'
 export default {
+  inject: ['reload'],
   data() {
     return {
+      load: false,
+      currentPage: 1,
+      totalCount: 1,
+      pageSizes: [10, 20, 30],
+      pageSize: 10,
       dialog: false,
       loading: false,
       tableData: [],
       search: '',
       form: {
-        order_no: '',
-        user_id: '',
-        shipping_id: '',
-        payment: '',
-        payment_type: '',
-        postage: '',
-        status: '',
-        pay_platform: '',
+        id: 0,
+        order_no: 0,
+        user_id: 0,
+        pay_platform: 1,
         platform_number: '',
         platform_status: '',
         update_time: ''
@@ -185,18 +153,19 @@ export default {
       formLabelWidth: '80px',
       timer: null,
       del: {
-        user_id: '',
-        order_no: ''
+        id: 0,
       },
     }
   },
   created() {
+    this.load = true
     this.fetchData()
   },
   methods: {
     fetchData() {
       getData('', api_name).then(response => {
           this.tableData = response.data
+          this.load = false
         }
       )
     },
@@ -206,8 +175,7 @@ export default {
       console.log(index, row)
     },
     handleDelete(index, row) {
-      this.del.user_id = row.user_id
-      this.del.order_no = row.order_no
+      this.del.id = row.id
       this.delete(this.del)
       this.reload()
       console.log(index, row)
@@ -223,12 +191,6 @@ export default {
           }
         }
       )
-    },
-    reload() {
-      this.isRouterAlive = false
-      this.$nextTick(function () {
-        this.isRouterAlive = true
-      })
     },
     handleClose(done) {
       if (this.loading) {
@@ -254,8 +216,9 @@ export default {
             // 动画关闭需要一定的时间
             setTimeout(() => {
               this.loading = false
-            }, 50)
-          }, 100)
+            }, 100)
+          }, 200)
+          this.reload()
         })
         .catch(_ => {
         })
@@ -265,7 +228,31 @@ export default {
       this.dialog = false
       clearTimeout(this.timer)
     },
+    handleSizeChange(val) {
+      this.pageSize = val
+      this.currentPage = 1
+    },
+
+    handleCurrentChange(val) {
+      this.currentPage = val
+    },
   },
+  computed: {
+    table_date() {
+      let search = this.search
+      if (search) {
+        // 搜索结果
+        let res = this.tableData.filter(data => !search || data.user_id.toLowerCase().includes(search.toLowerCase()))
+        let len = res.slice((this.currentPage - 1) * this.pageSize, this.currentPage * this.pageSize)
+        // 搜索后页长
+        this.totalCount = len.length
+        return res, len
+      } else {
+        this.totalCount = this.tableData.length
+        return this.tableData.slice((this.currentPage - 1) * this.pageSize, this.currentPage * this.pageSize)
+      }
+    }
+  }
 
 }
 </script>

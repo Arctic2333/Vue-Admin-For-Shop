@@ -8,57 +8,63 @@
       element-loading-background="rgba(0, 0, 0, 0.8)"
       :data="table_date"
       style="width: 100%"
-      @selection-change="handleSelectionChange"
     >
       <el-table-column type="expand">
         <template slot-scope="props">
           <el-form label-position="left" inline class="demo-table-expand">
-            <el-form-item label="用户名称" class="el-form-item">
-              <span>{{ props.row.username }}</span>
-            </el-form-item>
-            <el-form-item label="用户 ID">
+            <el-form-item label="轮播图 ID">
               <span>{{ props.row.id }}</span>
             </el-form-item>
-            <el-form-item label="用户密码">
-              <span>{{ props.row.password }}</span>
+            <el-form-item label="位置">
+              <span>{{ props.row.position }}</span>
             </el-form-item>
-            <el-form-item label="用户邮箱">
-              <span>{{ props.row.email }}</span>
+            <el-form-item label="描述">
+              <span>{{ props.row.details }}</span>
             </el-form-item>
-            <el-form-item label="用户电话">
-              <span>{{ props.row.phone }}</span>
+            <el-form-item label="图片">
+              <span>{{ props.row.image }}</span>
             </el-form-item>
-            <el-form-item label="用户角色">
-              <span v-if="props.row.role === 1">管理员</span>
-              <span v-else>普通用户</span>
+            <el-form-item label="Link">
+              <span>{{ props.row.link }}</span>
             </el-form-item>
-            <el-form-item label="用户创建时间">
+            <el-form-item label="Type">
+              <span> {{ props.row.type }}</span>
+            </el-form-item>
+            <el-form-item label="Status">
+              <span>{{ props.row.status }}</span>
+            </el-form-item>
+            <el-form-item label="商品ID">
+              <span>{{ props.row.product_id }}</span>
+            </el-form-item>
+            <el-form-item label="广告ID">
+              <span>{{ props.row.activity_id }}</span>
+            </el-form-item>
+            <el-form-item label="开始时间">
+              <span>{{ props.row.begin_time }}</span>
+            </el-form-item>
+            <el-form-item label="结束时间">
+              <span>{{ props.row.end_time }}</span>
+            </el-form-item>
+            <el-form-item label="创建时间">
               <span>{{ props.row.create_time }}</span>
             </el-form-item>
-            <el-form-item label="用户更新时间">
+            <el-form-item label="最后更新时间">
               <span>{{ props.row.update_time }}</span>
-            </el-form-item>
-            <el-form-item label="微信号">
-              <span>{{ props.row.wechat_openid }}</span>
             </el-form-item>
           </el-form>
         </template>
       </el-table-column>
       <el-table-column
-        type="selection"
-        width="55">
-      </el-table-column>
-      <el-table-column
-        label="用户 ID"
+        label="轮播图 ID"
         prop="id"
       />
       <el-table-column
-        label="用户名称"
-        prop="username"
+        label="描述"
+        prop="detail"
       />
       <el-table-column
-        label="邮箱"
-        prop="email"
+        label="商品 ID"
+        prop="product_id"
       />
       <el-table-column
         align="right"
@@ -67,7 +73,7 @@
           <el-input
             v-model="search"
             size="mini"
-            placeholder="输入用户名关键字搜索"
+            placeholder="输入轮播图描述搜索"
           />
         </template>
         <template slot-scope="scope">
@@ -86,54 +92,51 @@
       </el-table-column>
     </el-table>
     <el-pagination
-    @size-change="handleSizeChange"
-    @current-change="handleCurrentChange"
-    :current-page.sync="currentPage"
-    :page-sizes="pageSizes"
-    :page-size="pageSize"
-    layout="sizes, prev, pager, next"
-    :total="totalCount">
-  </el-pagination>
-    <div style="margin-top: 20px">
-      <el-button @click="deleteMul()" type="danger">批量删除</el-button>
-      <el-button @click="toggleSelection()">取消选择</el-button>
-    </div>
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+      :current-page.sync="currentPage"
+      :page-sizes="pageSizes"
+      :page-size="pageSize"
+      layout="sizes, prev, pager, next"
+      :total="totalCount">
+    </el-pagination>
     <el-drawer
       ref="drawer"
-      title="修改用户!"
+      title="修改轮播图!"
       :before-close="handleClose"
       :visible.sync="dialog"
-      direction="ltr"
+      direction="rtl"
       custom-class="demo-drawer"
     >
       <div class="demo-drawer__content">
-        <el-form :model="form">
-          <el-form-item label="用户名" :label-width="formLabelWidth">
-            <el-input v-model="form.username"></el-input>
+        <el-form :model="form" label-width="80px">
+          <el-form-item label="位置编号" style="width: 45%">
+            <el-input v-model="form.position"></el-input>
           </el-form-item>
-          <el-form-item label="密码" :label-width="formLabelWidth">
-            <el-input v-model="form.password"></el-input>
+          <el-form-item label="明细" style="width: 45%">
+            <el-input v-model="form.detail"></el-input>
           </el-form-item>
-          <el-form-item label="邮箱" :label-width="formLabelWidth">
-            <el-input v-model="form.email"></el-input>
+          <el-form-item label="产品编号" style="width: 45%">
+            <el-input v-model="form.product_id"></el-input>
           </el-form-item>
-          <el-form-item label="电话" :label-width="formLabelWidth">
-            <el-input v-model="form.phone"></el-input>
-          </el-form-item>
-          <el-form-item label="密保问题" :label-width="formLabelWidth">
-            <el-input v-model="form.question"></el-input>
-          </el-form-item>
-          <el-form-item label="密保问题的答案" :label-width="formLabelWidth">
-            <el-input v-model="form.answer"></el-input>
-          </el-form-item>
-          <el-form-item label="用户类型" :label-width="formLabelWidth">
-            <el-select v-model="form.role" placeholder="请选择用户类型">
-              <el-option label="管理员" value=1 ></el-option>
-              <el-option label="普通用户" value=0 ></el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="微信号" :label-width="formLabelWidth">
-            <el-input v-model="form.wechat_openid"></el-input>
+          <el-form-item label="图片文件名" style="width: 45%" >
+            <el-upload
+              class="upload-demo"
+              ref="upload"
+              action="http://localhost:8080/backstage/advert/upload.do"
+              :on-preview="handlePreview"
+              :on-remove="handleRemove"
+              :before-remove="beforeRemove"
+              :on-exceed="handleExceed"
+              :before-upload="beforeUpload"
+              :file-list="fileList"
+              list-type="picture"
+              :auto-upload="false"
+              :limit="1"
+            >
+              <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
+              <div slot="tip" class="el-upload__tip">选择上传一张jpg/png文件，且不超过500kb</div>
+            </el-upload>
           </el-form-item>
         </el-form>
         <div class="demo-drawer__footer">
@@ -148,15 +151,15 @@
 </template>
 
 <script>
-import {getTime} from "@/utils/get-time";
 import {deleteData, getData, updateData} from "@/api/com";
-import {deleteUsers} from "@/api/user";
+import {getTime} from "@/utils/get-time";
 
-const api_name = 'user'
+const api_name = 'advert'
 export default {
   inject: ['reload'],
   data() {
     return {
+      fileList: [],
       load: false,
       currentPage: 1,
       totalCount: 1,
@@ -167,23 +170,25 @@ export default {
       tableData: [],
       search: '',
       form: {
-        username: '',
-        password: '',
-        email: '',
-        phone: '',
-        question: '',
-        answer: '',
-        role: 0,
-        wechat_openid: '',
+        id: 0,
+        position: 1,
+        detail: '',
+        image: '',
+        link: null,
+        type: 1,
+        status: 1,
+        product_id: 1,
+        activity_id: null,
+        begin_time: '',
+        end_time: '',
+        create_time: '',
         update_time: ''
       },
       formLabelWidth: '80px',
       timer: null,
       del: {
-        id: 0
+        id: ''
       },
-      multipleSelection: [],
-      selectID: []
     }
   },
   created() {
@@ -204,7 +209,8 @@ export default {
       console.log(index, row)
     },
     handleDelete(index, row) {
-      this.del.id = row.id
+      this.del.user_id = row.user_id
+      this.del.order_no = row.order_no
       this.delete(this.del)
       this.reload()
       console.log(index, row)
@@ -214,27 +220,12 @@ export default {
         response => {
           this.status = response.status
           if (this.status === 20000) {
-            this.$message({ message: '删除用户成功', type: 'success' })
+            this.$message({message: '删除成功', type: 'success'})
           } else {
-            this.$message.error('删除用户失败')
+            this.$message.error('删除失败')
           }
         }
       )
-    },
-
-    delete_user(data){
-      deleteUsers(data).then(
-        response => {
-          this.status = response.status
-          if (this.status === 20000) {
-            this.$message({ message: '删除用户成功', type: 'success' })
-          } else {
-            this.$message.error('删除用户失败')
-          }
-        }
-      )
-      this.selectID = []
-      this.reload()
     },
     handleClose(done) {
       if (this.loading) {
@@ -247,13 +238,16 @@ export default {
             done()
             // 更新
             this.form.update_time = getTime()
+            this.$refs.upload.submit()
+            console.log(this.form.image)
             updateData(this.form, api_name).then(
               response => {
                 this.status = response.status
                 if (this.status === 20000) {
-                  this.$message({message: '更新用户成功', type: 'success'})
+                  this.$message({message: '更新轮播图成功', type: 'success'})
+                  this.$refs.upload.clearFiles()
                 } else {
-                  this.$message.error('更新用户失败')
+                  this.$message.error('更新轮播图失败')
                 }
               }
             )
@@ -272,18 +266,6 @@ export default {
       this.dialog = false
       clearTimeout(this.timer)
     },
-    handleSelectionChange(val) {
-      this.multipleSelection = val;
-    },
-    toggleSelection() {
-        this.$refs.multipleTable.clearSelection();
-    },
-    deleteMul(){
-      for (let index in this.multipleSelection){
-          this.selectID.push(this.multipleSelection[index].id)
-      }
-      this.delete_user(this.selectID);
-    },
     handleSizeChange(val) {
       this.pageSize = val
       this.currentPage = 1
@@ -292,13 +274,31 @@ export default {
     handleCurrentChange(val) {
       this.currentPage = val
     },
+    handleRemove(file, fileList) {
+      console.log(file, fileList);
+    },
+    handlePreview(file) {
+      console.log(file);
+    },
+    beforeRemove(file, fileList) {
+      return this.$confirm(`确定移除 ${file.name}？`);
+    },
+    beforeUpload(file){
+      this.form.image = file.name
+    },
+    handleExceed(files, fileList) {
+      this.$message({
+        message: '警告！只能选择一个文件',
+        type: 'warning'
+      });
+    },
   },
   computed: {
     table_date() {
       let search = this.search
       if (search) {
         // 搜索结果
-        let res = this.tableData.filter(data => !search || data.username.toLowerCase().includes(search.toLowerCase()))
+        let res = this.tableData.filter(data => !search || data.detail.toLowerCase().includes(search.toLowerCase()))
         let len = res.slice((this.currentPage - 1) * this.pageSize, this.currentPage * this.pageSize)
         // 搜索后页长
         this.totalCount = len.length

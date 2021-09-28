@@ -7,35 +7,10 @@
     <el-form-item label="用户ID" style="width: 45%">
       <el-input v-model="form.user_id"></el-input>
     </el-form-item>
-    <el-form-item label="收货地址ID" style="width: 45%">
-      <el-input v-model="form.shipping_id"></el-input>
-    </el-form-item>
-    <el-form-item label="实际付款金额(元)" style="width: 45%">
-      <el-input v-model="form.payment"></el-input>
-    </el-form-item>
-    <el-form-item label="支付类型" style="width: 45%">
-      <el-select v-model="form.payment_type" placeholder="请选择支付类型">
-        <el-option label="网上支付" value=1></el-option>
-        <el-option label="货到付款" value="0"></el-option>
-      </el-select>
-    </el-form-item>
-    <el-form-item label="运费(元)" style="width: 45%">
-      <el-input v-model="form.postage"></el-input>
-    </el-form-item>
-    <el-form-item label="支付状态" style="width: 45%">
-      <el-select v-model="form.status" placeholder="请选择支付状态">
-        <el-option label="已取消" value='0'></el-option>
-        <el-option label="非付款" value='10'></el-option>
-        <el-option label="已付款" value='20'></el-option>
-        <el-option label="已发货" value='40'></el-option>
-        <el-option label="交易成功" value='50'></el-option>
-        <el-option label="交易关闭" value='60'></el-option>
-      </el-select>
-    </el-form-item>
     <el-form-item label="支付平台" style="width: 45%">
       <el-select v-model="form.pay_platform" placeholder="请选择支付平台">
-        <el-option label="支付宝" value=1></el-option>
-        <el-option label="微信" value=2></el-option>
+        <el-option label="支付宝" value=1 ></el-option>
+        <el-option label="微信" value=2 ></el-option>
       </el-select>
     </el-form-item>
     <el-form-item label="支付平台流水号" style="width: 45%">
@@ -61,23 +36,22 @@ import {addData} from "@/api/com";
 
 const api_name = 'payinfo'
 export default {
+  inject: ['reload'],
   data(){
     return{
       form: {
-        order_no: '',
-        user_id: '',
-        shipping_id: '',
-        payment: '',
-        payment_type: '',
-        postage: '',
-        status: '',
-        pay_platform: '',
+        order_no: 0,
+        user_id: 0,
+        pay_platform: 1,
         platform_number: '',
         platform_status: '',
         update_time: '',
         create_time: ''
       },
     }
+  },
+  created() {
+    this.form ={}
   },
   methods: {
     onSubmit() {
@@ -97,14 +71,8 @@ export default {
         }
       )
       this.reload()
-    },
-    reload() {
       this.form = {}
-      this.isRouterAlive = false
-      this.$nextTick(function () {
-        this.isRouterAlive = true
-      })
-    }
+    },
   }
 }
 </script>

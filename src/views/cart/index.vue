@@ -1,9 +1,17 @@
 <template>
   <div class="app-container">
     <el-table
-      :data="tableData.filter(data => !search || data.name.toLowerCase().includes(search.toLowerCase()))"
+      v-loading.fullscreen.lock="load"
+      element-loading-text="拼命加载中"
+      element-loading-spinner="el-icon-loading"
+      element-loading-background="rgba(0, 0, 0, 0.8)"
+      :data="table_date"
       style="width: 100%"
     >
+      <el-table-column
+        label="购物车 ID"
+        prop="id"
+      />
       <el-table-column
         label="用户 ID"
         prop="user_id"
@@ -50,7 +58,15 @@
         </template>
       </el-table-column>
     </el-table>
-
+    <el-pagination
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+      :current-page.sync="currentPage"
+      :page-sizes="pageSizes"
+      :page-size="pageSize"
+      layout="sizes, prev, pager, next"
+      :total="totalCount">
+    </el-pagination>
     <el-dialog title="购物车" :visible.sync="dialogFormVisible">
       <el-form ref="form" :model="form" label-width="80px">
         <el-form-item label="用户ID" :label-width="formLabelWidth">
@@ -92,34 +108,41 @@ import {addData, deleteData, getData, updateData} from "@/api/com";
 
 const api_name  = 'cart'
 export default {
+  inject: ['reload'],
   data() {
     return {
+      load: false,
+      currentPage: 1,
+      totalCount: 1,
+      pageSizes: [10, 20, 30],
+      pageSize: 10,
       method_t: true,
       tableData: [],
       search: '',
       status: 0,
       dialogFormVisible: false,
       form: {
-        user_id: '',
-        product_id: '',
-        quantity: '',
-        checked: '',
+        user_id: 0,
+        product_id: 0,
+        quantity: 0,
+        checked: 0,
         update_time: ''
       },
       formLabelWidth: '80px',
       del: {
-        user_id: '',
-        product_id: ''
+       id: 0,
       }
     }
   },
   created() {
+    this.load = true
     this.fetchData()
   },
   methods: {
     fetchData() {
       getData('', api_name).then(response => {
           this.tableData = response.data
+          this.load = false
         }
       )
     }, handleAdd() {
@@ -133,8 +156,7 @@ export default {
       console.log(index, row)
     },
     handleDelete(index, row) {
-      this.del.user_id = row.user_id
-      this.del.product_id = row.product_id
+      this.del.id = row.id
       this.delete(this.del)
       this.reload()
       console.log(index, row)
@@ -150,6 +172,7 @@ export default {
         }
       )
       this.reload()
+      this.reset()
     },
     delete(data) {
       deleteData(data, api_name).then(
@@ -163,6 +186,7 @@ export default {
         }
       )
       this.reload()
+      this.reset()
     },
     edit(data) {
       updateData(data, api_name).then(response => {
@@ -175,17 +199,38 @@ export default {
       })
       console.log(data)
       this.reload()
+      this.reset()
     },
 
-    reload() {
+    reset() {
       this.method_t = true
       this.dialogFormVisible = false
-      this.isRouterAlive = false
-      this.$nextTick(function () {
-        this.isRouterAlive = true
-      })
+    },
+    handleSizeChange(val) {
+      this.pageSize = val
+      this.currentPage = 1
+    },
+
+    handleCurrentChange(val) {
+      this.currentPage = val
     },
   },
+  computed: {
+    table_date() {
+      let search = this.search
+      if (search) {
+        // 搜索结果
+        let res = this.tableData.filter(data => !search || data.name.toLowerCase().includes(search.toLowerCase()))
+        let len = res.slice((this.currentPage - 1) * this.pageSize, this.currentPage * this.pageSize)
+        // 搜索后页长
+        this.totalCount = len.length
+        return res, len
+      } else {
+        this.totalCount = this.tableData.length
+        return this.tableData.slice((this.currentPage - 1) * this.pageSize, this.currentPage * this.pageSize)
+      }
+    }
+  }
 }
 
 
