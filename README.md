@@ -32,7 +32,7 @@
 
 ## 运行
 
-后端项目地址：[ppmall: 实训项目（完成ppmall的完善）。原项目地址：https://gitee.com/AkiraRex/ppmall-server?_from=gitee_search - Gitee.com](https://gitee.com/gao-nan/ppmall/tree/master)
+后端项目地址：[ppmall: 实训项目（完成ppmall的完善）](https://gitee.com/gao-nan/ppmall/tree/master)
 
 运行顺序：先运行后端服务器，再运行前端项目
 
