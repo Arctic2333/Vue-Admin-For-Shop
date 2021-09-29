@@ -30,6 +30,22 @@
 
 4. 点击即可预览项目
 
+## 运行
+
+后端项目地址：[ppmall: 实训项目（完成ppmall的完善）。原项目地址：https://gitee.com/AkiraRex/ppmall-server?_from=gitee_search - Gitee.com](https://gitee.com/gao-nan/ppmall/tree/master)
+
+运行顺序：先运行后端服务器，再运行前端项目
+
+后端注意点：
+
+![image-20210929102547175](README.assets/image-20210929102547175.png)
+
+application context为空
+
+![image-20210929102701783](README.assets/image-20210929102701783.png)
+
+project structure -----》modules-------》dependencies添加web-inf下lib中的两个jar包
+
 ## 修改项目注意点：
 
 1. 入手：

@@ -21,9 +21,6 @@
             <el-form-item label="描述">
               <span>{{ props.row.details }}</span>
             </el-form-item>
-            <el-form-item label="图片">
-              <span>{{ props.row.image }}</span>
-            </el-form-item>
             <el-form-item label="Link">
               <span>{{ props.row.link }}</span>
             </el-form-item>
@@ -50,6 +47,12 @@
             </el-form-item>
             <el-form-item label="最后更新时间">
               <span>{{ props.row.update_time }}</span>
+            </el-form-item>
+            <el-form-item label="图片">
+              <el-image
+                style="width: 400px; height: 300px"
+                :src="url + props.row.image"
+                :fit="fit"></el-image>
             </el-form-item>
           </el-form>
         </template>
@@ -155,10 +158,13 @@ import {deleteData, getData, updateData} from "@/api/com";
 import {getTime} from "@/utils/get-time";
 
 const api_name = 'advert'
+const base_image_url = 'http://localhost:8080/dist/resource/'
 export default {
   inject: ['reload'],
   data() {
     return {
+      url: base_image_url,
+      fit: 'contain',
       fileList: [],
       load: false,
       currentPage: 1,
@@ -209,8 +215,7 @@ export default {
       console.log(index, row)
     },
     handleDelete(index, row) {
-      this.del.user_id = row.user_id
-      this.del.order_no = row.order_no
+      this.del.id = row.id
       this.delete(this.del)
       this.reload()
       console.log(index, row)

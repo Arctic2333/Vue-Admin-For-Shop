@@ -14,7 +14,7 @@
       <el-upload
         class="upload-demo"
         ref="upload"
-        action="/backstage/advert/upload.do"
+        action="http://localhost:8080/backstage/advert/upload.do"
         :on-preview="handlePreview"
         :on-remove="handleRemove"
         :before-remove="beforeRemove"
